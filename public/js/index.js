@@ -9,10 +9,20 @@ canvas.height = innerHeight
 const x = canvas.width / 2
 const y = canvas.height / 2
 
-const player = new Player(x, y, 10, 'white')
+// Change the radius from 10 to a larger value like 30
+const player = new Player(x, y, 30, 'white')
 const projectiles = []
 const enemies = []
 const particles = []
+
+const bankImage = new Image()
+bankImage.src = '../img/bank1.png'
+
+const mallyaImage = new Image()
+mallyaImage.src = '../img/vijay_mallya.png'
+
+const moneyImage = new Image()
+moneyImage.src = '../img/money.png'
 
 function spawnEnemies() {
   setInterval(() => {
@@ -136,5 +146,34 @@ function animate() {
   }
 }
 
-animate()
-spawnEnemies()
+// Add this before starting the game
+Promise.all([
+  new Promise(resolve => bankImage.onload = resolve),
+  new Promise(resolve => mallyaImage.onload = resolve),
+  new Promise(resolve => moneyImage.onload = resolve)
+]).then(() => {
+  animate()
+  spawnEnemies()
+})
+
+// Find where projectiles are being created (likely in a click or keypress event handler)
+addEventListener('click', (event) => {
+  const angle = Math.atan2(
+    event.clientY - canvas.height / 2,
+    event.clientX - canvas.width / 2
+  )
+  const velocity = {
+    x: Math.cos(angle) * 5,
+    y: Math.sin(angle) * 5
+  }
+  // Increase radius from default (5 or 10) to 15 or 20
+  projectiles.push(
+    new Projectile(
+      canvas.width / 2,
+      canvas.height / 2,
+      25, // Increased radius here
+      'white',
+      velocity
+    )
+  )
+})
